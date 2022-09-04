@@ -33,14 +33,15 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Widget> scoreKeeper = [];
+  int score = 0;
 
   checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getCorrectAnswer();
-    int score = 0;
     int total = quizBrain.getQuestionBanksLength();
     setState(() {
       if (quizBrain.isFinished() == false) {
         if (userPickedAnswer == correctAnswer) {
+          score++;
           scoreKeeper.add(
             const Icon(Icons.check, color: Colors.green),
           );
@@ -51,17 +52,18 @@ class _QuizPageState extends State<QuizPage> {
         }
         quizBrain.nextQuestion();
       } else {
-        // print("I have reached the end");
         Alert(
           context: context,
           type: AlertType.success,
           title: "End of Quiz",
-          desc: "You have reached the end of the quiz, press 'OK' to reset",
+          desc:
+              "Score: $score / $total\nYou have reached the end of the quiz, press 'OK' to reset",
           buttons: [
             DialogButton(
               onPressed: () => {
                 setState(() {
                   quizBrain.reset();
+                  score = 0;
                   scoreKeeper.removeRange(0, scoreKeeper.length);
                   Navigator.pop(context);
                 }),
