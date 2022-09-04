@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'quiz_brain.dart';
 
+QuizBrain quizBrain = QuizBrain();
 void main() => runApp(const Quizzler());
 
 class Quizzler extends StatelessWidget {
@@ -30,12 +32,27 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Widget> scoreKeeper = [];
-  List<String> questions = [
-    'You can lead a cow down stairs but not up stairs.',
-    'Approximately one quarter of human bones are in the feet.',
-    'A slug\'s blood is green.'
-  ];
-  List<Widget> answers = [];
+
+  checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getCorrectAnswer();
+    int count = 0;
+    setState(() {
+      if (count < quizBrain.getQuestionBanksLength() - 1) {
+        count++;
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(
+            const Icon(Icons.check, color: Colors.green),
+          );
+        } else {
+          scoreKeeper.add(
+            const Icon(Icons.close, color: Colors.red),
+          );
+        }
+      }
+      quizBrain.nextQuestion();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,7 +65,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: const EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questions[0],
+                quizBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 25.0,
@@ -73,8 +90,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked true.
-                setState(() {});
+                checkAnswer(true);
               },
             ),
           ),
@@ -94,8 +110,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                setState(() {});
-                //The user picked false.
+                checkAnswer(true);
               },
             ),
           ),
