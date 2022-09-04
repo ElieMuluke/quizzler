@@ -32,12 +32,12 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Widget> scoreKeeper = [];
+  final List<Widget> scoreKeeper = [];
   int score = 0;
+  final int total = quizBrain.getQuestionBanksLength();
 
   checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getCorrectAnswer();
-    int total = quizBrain.getQuestionBanksLength();
     setState(() {
       if (quizBrain.isFinished() == false) {
         if (userPickedAnswer == correctAnswer) {
