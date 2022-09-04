@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
 
 QuizBrain quizBrain = QuizBrain();
@@ -35,10 +36,10 @@ class _QuizPageState extends State<QuizPage> {
 
   checkAnswer(bool userPickedAnswer) {
     bool correctAnswer = quizBrain.getCorrectAnswer();
-    int count = 0;
+    int score = 0;
+    int total = quizBrain.getQuestionBanksLength();
     setState(() {
-      if (count < quizBrain.getQuestionBanksLength() - 1) {
-        count++;
+      if (quizBrain.isFinished() == false) {
         if (userPickedAnswer == correctAnswer) {
           scoreKeeper.add(
             const Icon(Icons.check, color: Colors.green),
@@ -48,8 +49,33 @@ class _QuizPageState extends State<QuizPage> {
             const Icon(Icons.close, color: Colors.red),
           );
         }
+        quizBrain.nextQuestion();
+      } else {
+        // print("I have reached the end");
+        Alert(
+          context: context,
+          type: AlertType.success,
+          title: "End of Quiz",
+          desc: "You have reached the end of the quiz, press 'OK' to reset",
+          buttons: [
+            DialogButton(
+              onPressed: () => {
+                setState(() {
+                  quizBrain.reset();
+                  scoreKeeper.removeRange(0, scoreKeeper.length);
+                  Navigator.pop(context);
+                }),
+              },
+              width: 120,
+              child: const Text(
+                "OK",
+                style: TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            )
+          ],
+        ).show();
+        // quizBrain.reset();
       }
-      quizBrain.nextQuestion();
     });
   }
 
@@ -110,13 +136,16 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                checkAnswer(true);
+                checkAnswer(false);
               },
             ),
           ),
         ),
-        Row(
-          children: scoreKeeper,
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10.0),
+          child: Row(
+            children: scoreKeeper,
+          ),
         ),
         //TODO: Add a Row here as your score keeper
       ],
